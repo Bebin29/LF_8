@@ -137,6 +137,11 @@ class AlarmManager:
             )
             return False
 
+        # Nach dem all()-Check sind diese Werte garantiert gesetzt
+        smtp_host: str = self.smtp_host  # type: ignore[assignment]
+        smtp_sender: str = self.smtp_sender  # type: ignore[assignment]
+        smtp_receiver: str = self.smtp_receiver  # type: ignore[assignment]
+
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         body = (
             f"Alarm-Meldung vom Monitoring-System\n"
@@ -149,16 +154,16 @@ class AlarmManager:
 
         msg = MIMEText(body, "plain", "utf-8")
         msg["Subject"] = f"[ALARM] {self.hostname}: {message}"
-        msg["From"] = self.smtp_sender
-        msg["To"] = self.smtp_receiver
+        msg["From"] = smtp_sender
+        msg["To"] = smtp_receiver
 
         try:
-            with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
+            with smtplib.SMTP(smtp_host, self.smtp_port) as server:
                 server.starttls()
                 if self.smtp_username and self.smtp_password:
                     server.login(self.smtp_username, self.smtp_password)
                 server.sendmail(
-                    self.smtp_sender, self.smtp_receiver, msg.as_string()
+                    smtp_sender, smtp_receiver, msg.as_string()
                 )
             return True
         except smtplib.SMTPException as e:

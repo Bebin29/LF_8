@@ -51,20 +51,19 @@ class AlarmManager:
         self.smtp_password = smtp_password
         self.hostname = socket.gethostname()
 
-        self._logger = logging.getLogger("alarm")
+        self._logger = logging.getLogger(f"alarm.{id(self)}")
         self._setup_logging()
 
     def _setup_logging(self) -> None:
         """Konfiguriert das Logging in die Logdatei."""
-        if not self._logger.handlers:
-            handler = logging.FileHandler(self.log_path, encoding="utf-8")
-            formatter = logging.Formatter(
-                "%(asctime)s | %(hostname)s | %(levelname)s | %(message)s",
-                datefmt="%Y-%m-%d %H:%M:%S",
-            )
-            handler.setFormatter(formatter)
-            self._logger.addHandler(handler)
-            self._logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(self.log_path, encoding="utf-8")
+        formatter = logging.Formatter(
+            "%(asctime)s | %(hostname)s | %(levelname)s | %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
+        self._logger.setLevel(logging.DEBUG)
 
     def _log(self, level: int, message: str, value: float) -> str:
         """Schreibt einen Eintrag in die Logdatei.

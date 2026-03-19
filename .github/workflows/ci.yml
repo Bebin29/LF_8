@@ -51,3 +51,46 @@ jobs:
       - name: Run flake8
         run: |
           flake8 src/ tests/ --max-line-length=120 --statistics
+
+  type-check:
+    name: type-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mypy
+          pip install -r requirements.txt
+
+      - name: Run mypy
+        run: |
+          mypy src/ --ignore-missing-imports
+
+  security:
+    name: security
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
+
+      - name: Run bandit
+        run: |
+          bandit -r src/ -f screen

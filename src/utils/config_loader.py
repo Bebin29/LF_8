@@ -1,10 +1,11 @@
 """Hilfsmodul zum Laden der Konfiguration.
 
-Liest Schwellenwerte, SMTP-Credentials und Monitoring-Parameter
-aus einer INI-Datei mittels configparser.
+Liest Schwellenwerte und Monitoring-Parameter aus einer INI-Datei.
+SMTP-Credentials werden bevorzugt aus Umgebungsvariablen geladen (.env).
 """
 
 import configparser
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -68,6 +69,9 @@ class ConfigLoader:
     def get_smtp_config(self) -> Dict[str, Any]:
         """Gibt die SMTP-Konfiguration zurück.
 
+        Credentials werden bevorzugt aus Umgebungsvariablen geladen
+        (SMTP_USERNAME, SMTP_PASSWORD). Fallback auf config.ini.
+
         Returns:
             Dict mit SMTP-Parametern.
         """
@@ -81,10 +85,12 @@ class ConfigLoader:
             "smtp_receiver": self._config.get(
                 "smtp", "receiver", fallback=None
             ),
-            "smtp_username": self._config.get(
-                "smtp", "username", fallback=None
+            "smtp_username": os.environ.get(
+                "SMTP_USERNAME",
+                self._config.get("smtp", "username", fallback=None),
             ),
-            "smtp_password": self._config.get(
-                "smtp", "password", fallback=None
+            "smtp_password": os.environ.get(
+                "SMTP_PASSWORD",
+                self._config.get("smtp", "password", fallback=None),
             ),
         }

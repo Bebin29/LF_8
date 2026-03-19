@@ -1,0 +1,10 @@
+services:
+  monitor:
+    build: .
+    container_name: lf8-monitor
+    env_file:
+      - .env
+    volumes:
+      - ./config.ini:/app/config.ini:ro
+      - ./logs:/app/logs
+    command: ["--all", "--log", "logs/monitor.log"]

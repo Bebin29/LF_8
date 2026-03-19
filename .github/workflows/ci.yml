@@ -29,7 +29,32 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest tests/ -v --cov=src --cov-report=term-missing
+          pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+      - name: Generate coverage badge
+        if: matrix.python-version == '3.12' && github.ref == 'refs/heads/develop'
+        run: |
+          COVERAGE=$(pytest tests/ --cov=src --cov-report=term 2>/dev/null | grep "TOTAL" | awk '{print $NF}' | tr -d '%')
+          echo "Coverage: ${COVERAGE}%"
+          mkdir -p .badges
+          if [ "$COVERAGE" -ge 90 ]; then COLOR="brightgreen";
+          elif [ "$COVERAGE" -ge 70 ]; then COLOR="yellow";
+          else COLOR="red"; fi
+          curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > .badges/coverage.svg
+
+      - name: Upload badge
+        if: matrix.python-version == '3.12' && github.ref == 'refs/heads/develop'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-badge
+          path: .badges/coverage.svg
 
   lint:
     name: lint

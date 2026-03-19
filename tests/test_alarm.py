@@ -1,6 +1,5 @@
 """Unit-Tests für das Alarm-Modul."""
 
-import logging
 from unittest.mock import MagicMock, patch
 
 from src.alarm import AlarmManager

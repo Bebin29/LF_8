@@ -1,7 +1,5 @@
 """Unit-Tests für das Monitoring-Modul."""
 
-from unittest.mock import patch
-
 from src.monitoring import SystemMonitor
 
 
